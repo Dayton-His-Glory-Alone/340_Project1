@@ -6,9 +6,9 @@ import java.util.Scanner;
  */
 
 /**
- * 340 Progject01
+ * IT 340 Project 01
  * 
- * @author Dayton
+ * @author Seth, James, and Dayton
  *
  */
 public class MazeReader {
