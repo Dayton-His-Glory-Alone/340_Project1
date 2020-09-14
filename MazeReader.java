@@ -60,6 +60,10 @@ public class MazeReader {
 				// Increment to next line of text file
 				strLine = input.readLine();
 			}
+
+			//Close the scanners
+			sc.close();
+			input.close();
 		}
 		catch (Exception e){
 			e.printStackTrace();
