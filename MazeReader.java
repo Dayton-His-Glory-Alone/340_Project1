@@ -1,4 +1,7 @@
 package maze;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -13,20 +16,54 @@ import java.util.Scanner;
  */
 public class MazeReader {
 
-	char matrix [][];
+	//Using ArrayList instead of 2d Array to account for varying maze sizes
+	ArrayList<ArrayList<Marker>> maze = new ArrayList<>();
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		MazeReader mazeReader = new MazeReader();
 	}
 
 	/**
 	 * Seth--> read the file
-	 * @param scan
 	 */
-	public MazeReader(Scanner scan) {
-		
+	public MazeReader() {
+		try{
+			//Read in file name from console and attempt to open file
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Enter the input file name: ");
+			String fileName = sc.nextLine();
+			BufferedReader input = new BufferedReader(new FileReader(fileName));
+
+			//Loop while there isn't a null line in the file
+			String strLine = input.readLine();
+			while(strLine != null) {
+				ArrayList<Marker> mazeLine = new ArrayList<>();
+				String[] arrLine = strLine.split("");
+
+				//Loop through each character of the String[]
+				for(String s : arrLine) {
+					if(s.equals("#"))
+						mazeLine.add(Marker.WALL);
+					else if(s.equals("."))
+						mazeLine.add(Marker.OPEN_SPACE);
+					else if(s.equals("o"))
+						mazeLine.add(Marker.START);
+					else if(s.equals("*"))
+						mazeLine.add(Marker.FINISH);
+				}
+
+				//Add line to maze object
+				maze.add(mazeLine);
+
+				// Increment to next line of text file
+				strLine = input.readLine();
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 //	Walls	# (hash mark)
 //	Open spaces	. (period)
