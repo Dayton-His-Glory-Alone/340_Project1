@@ -2,14 +2,10 @@
 
 Maze solver program
 
-## MazeReader Class
+## Driver Class
 
-Reads in file with following syntax:
+Run the program from the "Driver" Class
 
-Walls	# (hash mark)
+Enter a text file as an input for the program, such as the one given as an example on Module 1
 
-Open spaces	. (period)
-
-Start	o (lower case ‘O’)
-
-Finish (or goal)	* (asterisk)
+Program will print the path from FINISH to START on the console along with the maze it read in

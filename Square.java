@@ -2,24 +2,32 @@ package maze;
 
 public class Square {
 
-	public String character;
-	public Square (char ch) throws Exception {
+	public String location;
+	public boolean visited;	
+	public int x; 
+	public int y;
+	
+	public Square (char ch, int i, int j) throws Exception {
+		
+		visited = false;
+		x = i;
+		y = j;
 		
 		if (ch=='#') {
 			//wall
-			character= "wall";
+			location= "wall";
 		}
 		else if(ch=='.') {
 			//open space
-			character= "open";
+			location= "open";
 		}
 		else if(ch=='o') {
 			//start
-			character= "start";
+			location= "start";
 		}
 		else if(ch=='*') {
 			//finish
-			character= "finish";
+			location= "finish";
 		}
 		else {
 			throw new IllegalAccessException("invalid character");
@@ -27,4 +35,53 @@ public class Square {
 		
 	}
 	
+	public String getChar() {
+		
+		if (location.equals("wall")) {
+			
+			return "#";
+		}
+		else if (location.equals("open")) {
+			
+			return ".";
+		}
+		else if (location.equals("start")) {
+			return "o";
+		}
+		else if (location.equals("finish")) {
+			return "*";
+		}
+		else {
+			return null;
+		}	
+		
+	}
+	
+	public void setVisited(boolean value) {
+		
+		visited = value;
+		
+	} 
+	
+	
+	public String toString() {
+		
+		if (location.equals("wall")) {
+			
+			return "#";
+		}
+		else if (location.equals("open")) {
+			
+			return ".";
+		}
+		else if (location.equals("start")) {
+			return "o";
+		}
+		else if (location.equals("finish")) {
+			return "*";
+		}
+		else {
+			return null;
+		}		
+	}
 }
