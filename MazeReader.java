@@ -2,6 +2,7 @@ package maze;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -12,133 +13,96 @@ import java.util.Scanner;
  */
 public class MazeReader {
 
-	//Using ArrayList instead of 2d Array to account for varying maze sizes
-	
-	//ArrayList<ArrayList<Marker>> maze;
-	public ArrayList<ArrayList<Square>> maze;
-	public Square start;
-	
-	
-	/**
-	 * Seth--> read the file
-	 */
-	public MazeReader() {
-		try {
-			//create maze in constructor
-			maze = new ArrayList<>();
-			
+	public static Maze readMaze(){
+		//Initialize the Maze we will return
+		Maze returnMaze;
+
+		//Coordinates for the starting and ending points of the maze
+		Coordinate startCoordinate = null;
+		Coordinate endCoordinate = null;
+
+		//Initialize the temporary ArrayList we will add to
+		List<List<Square>> tempList = new ArrayList<>();
+
+		try{
 			//Read in file name from console and attempt to open file
 			Scanner sc = new Scanner(System.in);
 			System.out.println("Enter the input file name: ");
 			String fileName = sc.nextLine();
 			BufferedReader input = new BufferedReader(new FileReader(fileName));
 
+			//Create counter variables to keep track of X and Y coordinates
+			//We assume the TOP LEFT corner is (0, 0) and the BOTTOM RIGHT corner is (max, max)
+			int xCounter = 0;
+			int yCounter = 0;
+
+			//Temporary Square object and attributes that will be later used to add object to list
+			Square tempSquare;
+			Marker tempMarker;
+			List<Square> row;
+
 			//Loop while there isn't a null line in the file
 			String strLine = input.readLine();
-			int i = 0;
-			while(strLine != null) {
-				//ArrayList<Marker> mazeLine = new ArrayList<>();
-				ArrayList<Square> mazeLine = new ArrayList<>();
+			while(strLine != null){
+				//List to read each character in line
 				String[] arrLine = strLine.split("");
 
-				//Loop through each character of the String[]
-				for(int j = 0; j < strLine.length(); j++) {
-					Square sq;
-					if(strLine.charAt(j) == '#') {
-						//mazeLine.add(Marker.WALL);
-						sq = new Square('#', i, j);
-						mazeLine.add(sq);
+				//Initialize the row that will be added to the 2d list
+				row = new ArrayList<>();
+
+				//Loop through each character in current line
+				for(String s : arrLine){
+					//Check for which type the character is
+					switch (s) {
+						case "#":
+							tempMarker = Marker.WALL;
+							break;
+						case ".":
+							tempMarker = Marker.OPEN_SPACE;
+							break;
+						case "o":
+							tempMarker = Marker.START;
+							startCoordinate = new Coordinate(xCounter, yCounter);
+							break;
+						case "*":
+							tempMarker = Marker.FINISH;
+							endCoordinate = new Coordinate(xCounter, yCounter);
+							break;
+						default:
+							//If these variables are never assigned, fail and assign as null so method can finish
+							tempMarker = null;
+							break;
 					}
-					else if(strLine.charAt(j) == '.') {
-						//mazeLine.add(Marker.OPEN_SPACE);
-						sq = new Square('.', i, j);
-						mazeLine.add(sq);
-					}
-					else if(strLine.charAt(j)== 'o') {
-						// mazeLine.add(Marker.START);
-						sq = new Square('o', i, j);
-						mazeLine.add(sq);
-						start = new Square('o', i, j);
-					}
-					else if(strLine.charAt(j) == '*') {
-						//mazeLine.add(Marker.FINISH);
-						sq = new Square('*',i, j);
-						mazeLine.add(sq);
-					}
+
+					//Create the Square object with the information we found and add it to the list
+					//Add the Square to the Row list
+					tempSquare = new Square(tempMarker, new Coordinate(xCounter, yCounter));
+					row.add(tempSquare);
+
+					//Increment the x counter
+					xCounter++;
 				}
 
-				//Add line to maze object
-				maze.add(mazeLine);
+				//Add the finished row to the 2d list
+				tempList.add(row);
 
-				// Increment to next line of text file
+				//Increment the Y counter and reset the X counter
+				yCounter++;
+				xCounter = 0;
+
+				//Move to next line of file
 				strLine = input.readLine();
-				i++;
 			}
 
-			//Close the scanners
 			sc.close();
 			input.close();
+			returnMaze = new Maze(tempList, startCoordinate, endCoordinate);
+			return returnMaze;
 		}
-		catch (Exception e){
+		catch(Exception e){
+			System.out.println("Error reading in file\n");
 			e.printStackTrace();
+			return null;
 		}
 	}
-//	Walls	# (hash mark)
-//	Open spaces	. (period)
-//	Start	o (lower case ‘O’)
-//	Finish (or goal)	* (asterisk)
-
-	/*
-	 * ToString toString method that makes a String representation of this Maze in
-	 * the same format as the input.
-	 */
-	public String toString() {
-		
-		//array lists of array lists 
-		for (int i = 0; i < maze.size(); i++) {	
-			//maze.get(i) returns an array list. j loops through that array list's elements fetching a Square object from each element. For each Square object, the toString() prints out the Square in it's character formation (i.e. *, #, o, .)
-			for (int j = 0; j < maze.get(i).size(); j++) {		
-				System.out.print(maze.get(i).get(j));
-			}
-			System.out.print("\n");
-		}
-		return null;
-	}
-
-	public Square getStartSquare() {
-		return start;
-	}
-	
-	
-	/**
-	 * toString method that returns a one-character-long string containing only the
-	 * character corresponding to a location
-	 */
-	public String toString1() {
-		
-		// I think this is supposed to be in handled in Square class?	
-		return null;
-	}
-
-	/**
-	 * returns the type of square associated with the given char
-	 * 
-	 * @return char
-	 */
-	public static Square fromChar(char ch) {
-		Square obj = null;
-		try {
-			obj = new Square(ch, 0, 0);
-		} catch (Exception e) {
-		
-			e.printStackTrace();
-		}
-		return obj;
-	}
-	
-
-
-	
-	
-
 }

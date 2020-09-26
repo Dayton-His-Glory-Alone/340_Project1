@@ -2,86 +2,60 @@ package maze;
 
 public class Square {
 
-	public String location;
-	public boolean visited;	
-	public int x; 
-	public int y;
+	private Coordinate coordinate;
+	private Marker type;
+	private Square parent;
+
 	
-	public Square (char ch, int i, int j) throws Exception {
-		
-		visited = false;
-		x = i;
-		y = j;
-		
-		if (ch=='#') {
-			//wall
-			location= "wall";
-		}
-		else if(ch=='.') {
-			//open space
-			location= "open";
-		}
-		else if(ch=='o') {
-			//start
-			location= "start";
-		}
-		else if(ch=='*') {
-			//finish
-			location= "finish";
-		}
-		else {
-			throw new IllegalAccessException("invalid character");
-		}
-		
+	public Square (Marker m, Coordinate c) {
+		this.type = m;
+		this.coordinate = c;
 	}
 	
-	public String getChar() {
-		
-		if (location.equals("wall")) {
-			
-			return "#";
-		}
-		else if (location.equals("open")) {
-			
-			return ".";
-		}
-		else if (location.equals("start")) {
-			return "o";
-		}
-		else if (location.equals("finish")) {
-			return "*";
-		}
-		else {
-			return null;
-		}	
-		
+	public Marker getMarker() {
+		return type;
 	}
-	
-	public void setVisited(boolean value) {
-		
-		visited = value;
-		
-	} 
-	
-	
-	public String toString() {
-		
-		if (location.equals("wall")) {
-			
-			return "#";
+
+	public Coordinate getCoordinate(){
+		return this.coordinate;
+	}
+
+	public String printCoordinate(){
+		return "(" + this.coordinate.getX() + ", " + this.coordinate.getY() + ")";
+	}
+
+	public String getChar(){
+		String returnString;
+
+		switch (type){
+			case WALL:
+				returnString = "#";
+				break;
+
+			case OPEN_SPACE:
+				returnString = ".";
+				break;
+
+			case START:
+				returnString = "o";
+				break;
+
+			case FINISH:
+				returnString = "*";
+				break;
+
+			default:
+				returnString = "MARKER_RETURN_ERROR";
 		}
-		else if (location.equals("open")) {
-			
-			return ".";
-		}
-		else if (location.equals("start")) {
-			return "o";
-		}
-		else if (location.equals("finish")) {
-			return "*";
-		}
-		else {
-			return null;
-		}		
+
+		return returnString;
+	}
+
+	public void setParent(Square s){
+		this.parent = s;
+	}
+
+	public Square getParent() {
+		return this.parent;
 	}
 }
