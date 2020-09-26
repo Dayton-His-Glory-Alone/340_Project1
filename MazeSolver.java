@@ -60,7 +60,6 @@ public class MazeSolver {
 
     private List<Square> backtrack(Square s){
         List<Square> backtrackPath = new ArrayList<>();
-
         Square current = s;
 
         //Populate the backtrackPath with the current square's parent

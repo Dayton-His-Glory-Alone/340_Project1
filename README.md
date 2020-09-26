@@ -1,11 +1,20 @@
 # 340_Project1
 
-Maze solver program
+Maze solver program using BFS
 
-## Driver Class
+## Running the Program
 
-Run the program from the "Driver" Class
+The program is run from the Driver.java class and currently runs exclusively in the console.
 
-Enter a text file as an input for the program, such as the one given as an example on Module 1
+Start by launching the Driver.java class. You will prompted to enter the file path for the maze
+you want to evaluate. The maze must be .txt file.
 
-Program will print the path from FINISH to START on the console along with the maze it read in
+The console will then display the maze read in, as to assure the maze displayed is equivalent 
+to the maze from the file.
+
+The console will then print the shortest path in the maze as a sequence of coordinates. 
+These coordinates are printed in order of start to finish with both the starting and ending 
+nodes being part of the list. 
+
+For reading the coordinates, assume that the TOP LEFT corner is (0, 0) and the bottom right 
+corner is (MAX, MAX).
