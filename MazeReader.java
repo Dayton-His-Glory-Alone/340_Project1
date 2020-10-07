@@ -13,7 +13,7 @@ import java.util.Scanner;
  */
 public class MazeReader {
 
-	public static Maze readMaze(){
+	public static Maze readMaze(String fileName){
 		//Initialize the Maze we will return
 		Maze returnMaze;
 
@@ -25,10 +25,6 @@ public class MazeReader {
 		List<List<Square>> tempList = new ArrayList<>();
 
 		try{
-			//Read in file name from console and attempt to open file
-			Scanner sc = new Scanner(System.in);
-			System.out.println("Enter the input file name: ");
-			String fileName = sc.nextLine();
 			BufferedReader input = new BufferedReader(new FileReader(fileName));
 
 			//Create counter variables to keep track of X and Y coordinates
@@ -94,7 +90,6 @@ public class MazeReader {
 				strLine = input.readLine();
 			}
 
-			sc.close();
 			input.close();
 			returnMaze = new Maze(tempList, startCoordinate, endCoordinate);
 			return returnMaze;
@@ -103,6 +98,16 @@ public class MazeReader {
 			System.out.println("Error reading in file\n");
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	public static boolean isFileValid(String fileName){
+		try{
+			BufferedReader input = new BufferedReader(new FileReader(fileName));
+			return true;
+		}
+		catch(Exception e){
+			return false;
 		}
 	}
 }

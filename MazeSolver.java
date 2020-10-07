@@ -1,4 +1,6 @@
 package maze;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,14 +10,19 @@ public class MazeSolver {
 
     private static final int[][] DIRECTIONS = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
-    public List<Square> solve(Maze maze){
+    private List<Square> visitOrder;
+    private List<Square> visited;
+
+    public List<Square> solve(Maze maze) {
         //Create list of squares to visit next (FIFO)
         //Add the start square to the list to start the algorithm
         LinkedList<Square> nextToVisit = new LinkedList<>();
         nextToVisit.add(maze.getStartSquare());
 
         //List to keep track of which squares have been visited
-        List<Square> visited = new ArrayList<>();
+        visited = new ArrayList<>();
+
+        visitOrder = new ArrayList<>();
 
         while(!nextToVisit.isEmpty()){
             //Set current square as the bottom square off the list
@@ -31,6 +38,11 @@ public class MazeSolver {
 
                 else if(current.getMarker() == Marker.FINISH){
                     return backtrack(current);
+                }
+
+                else if(current.getMarker() == Marker.OPEN_SPACE){
+                    if(!visitOrder.contains(current))
+                        visitOrder.add(current);
                 }
 
                 //Loop through each of the 4 directions
@@ -49,6 +61,9 @@ public class MazeSolver {
                         newSquare.setParent(current);
                         nextToVisit.add(newSquare);
                         visited.add(current);
+
+                        if(!visitOrder.contains(current))
+                            visitOrder.add(current);
                     }
                 }
             }
@@ -74,9 +89,9 @@ public class MazeSolver {
 
     private boolean isInBounds(Square s, Maze m){
         if(s.getCoordinate().getX() < 0
-                || s.getCoordinate().getX() > m.getRows()
+                || s.getCoordinate().getX() > m.getColumns()
                 || s.getCoordinate().getY() < 0
-                || s.getCoordinate().getY() > m.getColumns())
+                || s.getCoordinate().getY() > m.getRows())
             return false;
         else
             return true;
@@ -84,11 +99,15 @@ public class MazeSolver {
 
     private boolean checkNextMoveInBounds(Square s, int[] direction, int rows, int columns){
         if(s.getCoordinate().getX() + direction[0] < 0
-                || s.getCoordinate().getX() + direction[0] > rows
+                || s.getCoordinate().getX() + direction[0] > columns
                 || s.getCoordinate().getY() + direction[1] < 0
-                || s.getCoordinate().getY() + direction[1] > columns)
+                || s.getCoordinate().getY() + direction[1] > rows)
             return false;
         else
             return true;
+    }
+
+    public List<Square> getVisitOrder(){
+        return this.visitOrder;
     }
 }

@@ -1,5 +1,12 @@
 package maze;
 
+import javafx.util.Pair;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Maze {
@@ -9,6 +16,9 @@ public class Maze {
     //Start and End coordinate attributes
     Coordinate startCoordinate;
     Coordinate endCoordinate;
+
+    //Labels shown in Maze GUI
+    List<List<JLabel>> mazeLabels;
 
     public Maze(List<List<Square>> m, Coordinate s, Coordinate e){
         this.maze = m;
@@ -47,12 +57,13 @@ public class Maze {
         return getSquareByCoordinate(this.startCoordinate.getX(), this.startCoordinate.getY());
     }
 
-    public int getRows(){
-        return this.maze.get(0).size();
+    public JLabel getJLabelByCoordinate(Coordinate c){
+        return mazeLabels.get(c.getY()).get(c.getX());
     }
 
-    public int getColumns(){
+    public int getRows(){
         return this.maze.size();
     }
 
+    public int getColumns(){ return this.maze.get(0).size(); }
 }
