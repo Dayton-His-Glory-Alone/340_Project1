@@ -3,6 +3,7 @@
 Maze solver program using BFS
 
 ## Running the Program
+![me](https://media.giphy.com/media/ueMZiuhF3IOYA0ZFsr/giphy.gif)
 
 The program is run from the Driver.java class and currently runs exclusively in the console.
 
