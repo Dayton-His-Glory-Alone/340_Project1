@@ -34,23 +34,23 @@ public class MazeApp {
 
             loadButton.addActionListener(actionEvent -> {
                 Maze maze = MazeReader.readMaze(fileInput.getText());
-                MazeSolver solver = new MazeSolver();
-                displayMaze(maze, solver);
+                assert maze != null;
+                displayMaze(maze);
 
                 f.dispose();
             });
         });
     }
 
-    public void displayMaze(Maze m, MazeSolver s){
+    public void displayMaze(Maze m){
         List<List<JLabel>> mazeLabels = new ArrayList<>();
 
         long startTime = System.nanoTime();
-        List<Square> shortestPath = s.solve(m);
+        List<Square> shortestPath = m.solve();
         long endTime = System.nanoTime();
 
         Collections.reverse(shortestPath);
-        List<Square> visited = s.getVisitOrder();
+        List<Square> visited = m.getVisitOrder();
 
         JFrame f = new JFrame("Maze App");
         f.setLayout(new BorderLayout());
@@ -65,6 +65,7 @@ public class MazeApp {
         JButton stepButton = new JButton("Step");
         JButton resetButton = new JButton("Reset");
         JLabel statusLabel = new JLabel("Maze Loaded");
+
 
         footer.add(startButton);
         footer.add(stepButton);
@@ -95,7 +96,7 @@ public class MazeApp {
             //Because startButton was clicked, hide stepButton
             stepButton.setVisible(false);
 
-            Timer t1 = new Timer(100, actionEvent12 -> {
+            Timer t1 = new Timer(50, actionEvent12 -> {
                 if(!visited.isEmpty()){
                     mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
                     visited.remove(0);
@@ -103,8 +104,8 @@ public class MazeApp {
                     statusLabel.setText("Solution in Progress");
                 }
                 else{
-                    for(Square s12 : shortestPath){
-                        mazeLabels.get(s12.getCoordinate().getY()).get(s12.getCoordinate().getX()).setBackground(Color.PINK);
+                    for(Square s : shortestPath){
+                        mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
                     }
 
                     startButton.setVisible(false);
@@ -121,13 +122,14 @@ public class MazeApp {
             t1.start();
         });
 
+
         stepButton.addActionListener(actionEvent -> {
             if(!visited.isEmpty()){
                 mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
                 visited.remove(0);
             }
             else{
-                Timer t2 = new Timer(100, actionEvent1 -> {
+                Timer t2 = new Timer(50, actionEvent1 -> {
                     if(!shortestPath.isEmpty()){
                         for(Square s1 : shortestPath){
                             mazeLabels.get(s1.getCoordinate().getY()).get(s1.getCoordinate().getX()).setBackground(Color.PINK);
