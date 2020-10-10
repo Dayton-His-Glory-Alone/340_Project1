@@ -102,6 +102,12 @@ public class MazeApp {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                //Make startButton idempotent
+                startButton.setVisible(false);
+
+                //Because startButton was clicked, hide stepButton
+                stepButton.setVisible(false);
+
                 Timer t1 = new Timer(100, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -123,7 +129,7 @@ public class MazeApp {
                             if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
                                 statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
                             else{
-                                statusLabel.setText("No Solution Found");
+                                //statusLabel.setText("No Solution Found");
                             }
                         }
                     }
@@ -158,7 +164,7 @@ public class MazeApp {
                                 if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
                                     statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
                                 else{
-                                    statusLabel.setText("No Solution Found");
+                                    //statusLabel.setText("No Solution Found");
                                 }
                             }
                         }
