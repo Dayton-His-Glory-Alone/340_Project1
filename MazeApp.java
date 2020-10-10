@@ -2,6 +2,7 @@ package maze;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,9 @@ public class MazeApp {
         //Get shortest path and reverse it for the GUI
         List<Square> shortestPath = m.getShortestPath();
         Collections.reverse(shortestPath);
+
+        //Create boolean flag for status label later
+        final boolean pathFound = (shortestPath.get(shortestPath.size() - 1).getMarker() == Marker.FINISH);
 
         //Get list of all squares visited to display on GUI
         List<Square> visited = m.getVisitOrder();
@@ -114,24 +118,29 @@ public class MazeApp {
 
             Timer t1 = new Timer(50, actionEvent12 -> {
                 if(!visited.isEmpty()){
-                    mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
+                    if(!(visited.get(0).getMarker() == Marker.START || visited.get(0).getMarker() == Marker.FINISH))
+                        mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
                     visited.remove(0);
 
                     statusLabel.setText("Solution in Progress");
                 }
                 else{
                     for(Square s : shortestPath){
-                        mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
+                        if(!(s.getMarker() == Marker.START || s.getMarker() == Marker.FINISH))
+                            mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
                     }
 
                     startButton.setVisible(false);
                     stepButton.setVisible(false);
                     resetButton.setVisible(true);
 
-                    if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                        statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
+                    if(pathFound){
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        float executionTime = (endTime - startTime)/(float)1000000;
+                        statusLabel.setText("Solution in " + shortestPath.size() + " steps in " + df.format(executionTime) + " ms");
+                    }
                     else{
-                        //statusLabel.setText("No Solution Found");
+                        statusLabel.setText("No solution found.");
                     }
                 }
             });
@@ -145,35 +154,28 @@ public class MazeApp {
          */
         stepButton.addActionListener(actionEvent -> {
             if(!visited.isEmpty()){
-                mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
+                if(!(visited.get(0).getMarker() == Marker.START || visited.get(0).getMarker() == Marker.FINISH))
+                    mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
                 visited.remove(0);
             }
             else{
-                Timer t2 = new Timer(50, actionEvent1 -> {
-                    if(!shortestPath.isEmpty()){
-                        for(Square s1 : shortestPath){
-                            mazeLabels.get(s1.getCoordinate().getY()).get(s1.getCoordinate().getX()).setBackground(Color.PINK);
-                        }
-
-                        statusLabel.setText("Solution in Progress");
-                    }
-                    else{
-                        startButton.setVisible(false);
-                        stepButton.setVisible(false);
-                        resetButton.setVisible(true);
-
-                        if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                            statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
-                        else{
-                            //statusLabel.setText("No Solution Found");
-                        }
-                    }
-                });
-                t2.start();
+                for(Square s : shortestPath){
+                    if(!(s.getMarker() == Marker.START || s.getMarker() == Marker.FINISH))
+                        mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
+                }
 
                 startButton.setVisible(false);
                 stepButton.setVisible(false);
                 resetButton.setVisible(true);
+
+                if(pathFound){
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    float executionTime = (endTime - startTime)/(float)1000000;
+                    statusLabel.setText("Solution in " + shortestPath.size() + " steps in " + df.format(executionTime) + " ms");
+                }
+                else{
+                    statusLabel.setText("No solution found.");
+                }
             }
         });
 
