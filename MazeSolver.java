@@ -1,180 +1,113 @@
 package maze;
+
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MazeSolver {
 
-	Stack<Square> intersections = new Stack<>();
+    private static final int[][] DIRECTIONS = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
-	//List of all the current paths we've found
-	ArrayList<Stack<Square>> foundPaths = new ArrayList<>();
-	
-	
+    private List<Square> visitOrder;
+    private List<Square> visited;
 
-	public void solve(ArrayList<ArrayList<Square>> m, Square start) {
-		
-		//used for back tracking
-		Stack<Square>currentPath = new Stack<Square>();
+    public List<Square> solve(Maze maze) {
+        //Create list of squares to visit next (FIFO)
+        //Add the start square to the list to start the algorithm
+        LinkedList<Square> nextToVisit = new LinkedList<>();
+        nextToVisit.add(maze.getStartSquare());
 
-		boolean finishedBacktracking = false;
-		
-		//keep track of current square
-		Square current = start;
-				
-		ArrayList<ArrayList<Square>> maze = setVisited(m);
-		
-		while (!current.getChar().equals("*")) {
-			
-			int i = current.x;
-			int j = current.y;
-							
-			//current square coordinates (i,j)
-			//i > 0 and j < maze.size() in order to stay in bounds
+        //List to keep track of which squares have been visited
+        visited = new ArrayList<>();
 
-			//check north (i-1,j) (0,5)
-			if ((maze.get(i-1).get(j).location.equals("open") && maze.get(i-1).get(j).visited == false) || maze.get(i-1).get(j).location.equals("finish")) {
+        visitOrder = new ArrayList<>();
 
-				if(maze.get(i-1).get(j).location.equals("finish")) {
-					currentPath.push(maze.get(i).get(j));
-					currentPath.push(maze.get(i-1).get(j));
-					foundPaths.add(currentPath);
-					break;
-				}
+        while(!nextToVisit.isEmpty()){
+            //Set current square as the bottom square off the list
+            //Remove bottom square from list
+            Square current = nextToVisit.remove();
 
-				findIntersections(maze, i, j);
+            //Check if it's in bounds and hasn't been visited
+            if(isInBounds(current, maze) && !visited.contains(current)){
+                if(current.getMarker() == Marker.WALL){
+                    visited.add(current);
+                    continue;
+                }
 
-				if(finishedBacktracking == false){
-					//add current square to the stack so we can back track
-					currentPath.push(current);
-					current.visited = true;
-				}
-				else{
-					finishedBacktracking = false;
-				}
+                else if(current.getMarker() == Marker.FINISH){
+                    return backtrack(current);
+                }
 
-				current = maze.get(i-1).get(j);
-			}	
-			//check east (i, j+1) (1,6)
-			else if ((maze.get(i).get(j+1).location.equals("open") && maze.get(i).get(j+1).visited == false) || maze.get(i).get(j+1).location.equals("finish")) {
+                else if(current.getMarker() == Marker.OPEN_SPACE){
+                    if(!visitOrder.contains(current))
+                        visitOrder.add(current);
+                }
 
-				if(maze.get(i).get(j+1).location.equals("finish")) {
-					currentPath.push(maze.get(i).get(j));
-					currentPath.push(maze.get(i).get(j+1));
-					foundPaths.add(currentPath);
-					break;
-				}
+                //Loop through each of the 4 directions
+                for(int[] direction : DIRECTIONS){
+                    Square newSquare;
 
-				if(finishedBacktracking == false){
-					//add current square to the stack so we can back track
-					currentPath.push(current);
-					current.visited = true;
-				}
-				else{
-					finishedBacktracking = false;
-				}
+                    //If the move it is attempting is in bounds, assign newSquare to square at those coordinates
+                    //Otherwise, continue to next iteration of for loop
+                    if(checkNextMoveInBounds(current, direction, maze.getRows(), maze.getColumns()))
+                        newSquare = maze.getSquareByCoordinate(current.getCoordinate().getX() + direction[0], current.getCoordinate().getY() + direction[1]);
+                    else
+                        continue;
 
-				current = maze.get(i).get(j+1);
-			}	
-			//check west (i,j-1) (1,4)
-			else if ((maze.get(i).get(j-1).location.equals("open") && maze.get(i).get(j-1).visited == false) || maze.get(i).get(j-1).location.equals("finish")) {
+                    //Dont add new square to list to visit if it is visited
+                    if(!visited.contains(maze.getSquareByCoordinate(newSquare.getCoordinate().getX(), newSquare.getCoordinate().getY()))){
+                        newSquare.setParent(current);
+                        nextToVisit.add(newSquare);
+                        visited.add(current);
 
-				if(maze.get(i).get(j-1).location.equals("finish")) {
-					currentPath.push(maze.get(i).get(j));
-					currentPath.push(maze.get(i).get(j-1));
-					foundPaths.add(currentPath);
-					break;
-				}
+                        if(!visitOrder.contains(current))
+                            visitOrder.add(current);
+                    }
+                }
+            }
+        }
 
-				if(finishedBacktracking == false){
-					//add current square to the stack so we can back track
-					currentPath.push(current);
-					current.visited = true;
-				}
-				else{
-					finishedBacktracking = false;
-				}
+        return Collections.emptyList();
+    }
 
-				current = maze.get(i).get(j-1);
-			}
-			//check south (i+1,j) (2,5)
-			else if ((maze.get(i+1).get(j).location.equals("open") && maze.get(i+1).get(j).visited == false) || maze.get(i+1).get(j).location.equals("finish")) {
 
-				if(maze.get(i+1).get(j).location.equals("finish")) {
-					currentPath.push(maze.get(i).get(j));
-					currentPath.push(maze.get(i+1).get(j));
-					foundPaths.add(currentPath);
-					break;
-				}
+    private List<Square> backtrack(Square s){
+        List<Square> backtrackPath = new ArrayList<>();
+        Square current = s;
 
-				if(finishedBacktracking == false){
-					//add current square to the stack so we can back track
-					currentPath.push(current);
-					current.visited = true;
-				}
-				else{
-					finishedBacktracking = false;
-				}
+        //Populate the backtrackPath with the current square's parent
+        //Keep switching current to current.getParent() to eventually exit the loop
+        while(current != null){
+            backtrackPath.add(current);
+            current = current.getParent();
+        }
 
-				current = maze.get(i+1).get(j);
-			}
-			else {
-				while (!(currentPath.peek().x == intersections.peek().x) || !(currentPath.peek().y == intersections.peek().y)) {
-					currentPath.pop();
-				}
+        return backtrackPath;
+    }
 
-				current = currentPath.peek();
-				finishedBacktracking = true;
-			}				
-		}
+    private boolean isInBounds(Square s, Maze m){
+        if(s.getCoordinate().getX() < 0
+                || s.getCoordinate().getX() > m.getColumns()
+                || s.getCoordinate().getY() < 0
+                || s.getCoordinate().getY() > m.getRows())
+            return false;
+        else
+            return true;
+    }
 
-		printResult(currentPath);
-  } // solve() function brace
-	
-	
-	public void findIntersections(ArrayList<ArrayList<Square>> maze, int i, int j){
-		int counter = 0;
+    private boolean checkNextMoveInBounds(Square s, int[] direction, int rows, int columns){
+        if(s.getCoordinate().getX() + direction[0] < 0
+                || s.getCoordinate().getX() + direction[0] >= columns
+                || s.getCoordinate().getY() + direction[1] < 0
+                || s.getCoordinate().getY() + direction[1] >= rows)
+            return false;
+        else
+            return true;
+    }
 
-		if ((maze.get(i-1).get(j).location.equals("open") && maze.get(i-1).get(j).visited == false))
-			counter++;
-		if ((maze.get(i).get(j+1).location.equals("open") && maze.get(i).get(j+1).visited == false))
-			counter++;
-		if ((maze.get(i).get(j-1).location.equals("open") && maze.get(i).get(j-1).visited == false))
-			counter++;
-		if ((maze.get(i+1).get(j).location.equals("open") && maze.get(i+1).get(j).visited == false))
-			counter++;
-
-		if(counter > 1){
-			intersections.push(maze.get(i).get(j));
-		}
-	}
-	
-	public ArrayList<ArrayList<Square>> setVisited(ArrayList<ArrayList<Square>> maze){
-		ArrayList<ArrayList<Square>> returnMaze = maze;
-		
-		for (int i = 0; i < returnMaze.size(); i++) {
-			for (int j = 0; j < returnMaze.size(); j++) {
-				if (returnMaze.get(i).get(j).getChar().equals(".")) {
-					returnMaze.get(i).get(j).setVisited(false);
-				}
-			}
-		}
-
-		return returnMaze;
-	}
-
-//	public void findNewPaths(){
-//
-//	}
-
-	public void printResult(Stack<Square> currentPath){
-
-		System.out.println("Printing path from FINISH to START as coordinate pairs: ");
-		int c = currentPath.size();
-		for(int i = 0; i < c; i++){
-			System.out.println("(" + currentPath.peek().x + ", " + currentPath.peek().y + ")");
-			currentPath.pop();
-		}
-		System.out.println("\n\n");
-	}
-	
-}//class brace
+    public List<Square> getVisitOrder(){
+        return this.visitOrder;
+    }
+}
