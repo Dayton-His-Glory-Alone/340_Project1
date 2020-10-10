@@ -3,6 +3,7 @@
 Maze solver program using BFS
 
 ## Running the Program
+![me](https://media.giphy.com/media/ueMZiuhF3IOYA0ZFsr/giphy.gif)
 
 The program runs from the excutable jar file.
 
