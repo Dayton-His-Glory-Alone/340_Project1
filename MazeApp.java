@@ -45,17 +45,24 @@ public class MazeApp {
     public void displayMaze(Maze m){
         List<List<JLabel>> mazeLabels = new ArrayList<>();
 
+        //Solve the maze and record how long it took
         long startTime = System.nanoTime();
-        List<Square> shortestPath = m.solve();
+        m.solve();
         long endTime = System.nanoTime();
 
+        //Get shortest path and reverse it for the GUI
+        List<Square> shortestPath = m.getShortestPath();
         Collections.reverse(shortestPath);
+
+        //Get list of all squares visited to display on GUI
         List<Square> visited = m.getVisitOrder();
 
+        //Create JFrame and set layout
         JFrame f = new JFrame("Maze App");
         f.setLayout(new BorderLayout());
 
         JPanel mazeVisual = new JPanel();
+        mazeVisual.setLayout(new GridLayout(m.getRows(), m.getColumns()));
         JScrollPane scrollPane = new JScrollPane(mazeVisual);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -74,8 +81,11 @@ public class MazeApp {
 
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        mazeVisual.setLayout(new GridLayout(m.getRows(), m.getColumns()));
-
+        /*
+        Setup the GUI by creating labels in a grid
+        Each label represents a square
+        Labels will be colored by function on the GUI
+         */
         for(int i = 0; i < m.getRows(); i++){
             List<JLabel> mazeLabelRow = new ArrayList<>();
 
@@ -89,9 +99,15 @@ public class MazeApp {
             mazeLabels.add(mazeLabelRow);
         }
 
+        /*
+        ActionListener for startButton
+        Set visibility of buttons on GUI
+        Color every visited square in order every 100ms
+        Once finished, reset visibility as needed and display shortest path
+         */
         startButton.addActionListener(actionEvent -> {
-            //Make startButton idempotent
-            startButton.setVisible(false);
+            //Pressing start button acts as 'speeding up' the timer
+            startButton.setText("Speed Up");
 
             //Because startButton was clicked, hide stepButton
             stepButton.setVisible(false);
@@ -122,7 +138,11 @@ public class MazeApp {
             t1.start();
         });
 
-
+        /*
+        ActionListener for stepButton
+        Color next visited square by button press
+        Once finished, show the shortest path
+         */
         stepButton.addActionListener(actionEvent -> {
             if(!visited.isEmpty()){
                 mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
@@ -157,6 +177,11 @@ public class MazeApp {
             }
         });
 
+        /*
+        ActionListener for resetButton
+        Dispose of the JFrame
+        Reset the GUI
+         */
         resetButton.addActionListener(actionEvent -> {
             f.dispose();
             new MazeApp();

@@ -13,8 +13,9 @@ public class Maze {
     Coordinate startCoordinate;
     Coordinate endCoordinate;
 
-    //List of all squares visited
+    //List of all squares visited and list of shortest path, respectively
     private List<Square> visitOrder;
+    private List<Square> shortestPath;
 
     public Maze(List<List<Square>> m, Coordinate s, Coordinate e){
         this.maze = m;
@@ -59,7 +60,7 @@ public class Maze {
 
     public int getColumns(){ return this.maze.get(0).size(); }
 
-    public List<Square> solve(){
+    public void solve(){
         //Make sure maze object has been populated
         if(this.maze == null)
             throw new NullPointerException("solve() method called before maze object was populated");
@@ -91,7 +92,8 @@ public class Maze {
                 }
 
                 else if(current.getMarker() == Marker.FINISH){
-                    return backtrack(current);
+                    backtrack(current);
+                    break;
                 }
 
                 else if(current.getMarker() == Marker.OPEN_SPACE){
@@ -122,8 +124,6 @@ public class Maze {
                 }
             }
         }
-
-        return Collections.emptyList();
     }
 
     private boolean isInBounds(Square s){
@@ -133,7 +133,7 @@ public class Maze {
                 && s.getCoordinate().getY() <= this.getRows();
     }
 
-    private List<Square> backtrack(Square s){
+    private void backtrack(Square s){
         List<Square> backtrackPath = new ArrayList<>();
         Square current = s;
 
@@ -144,11 +144,7 @@ public class Maze {
             current = current.getParent();
         }
 
-        //Returned list will not contain start and end nodes
-        backtrackPath.remove(backtrackPath.size() - 1);
-        backtrackPath.remove(0);
-
-        return backtrackPath;
+        this.shortestPath = backtrackPath;
     }
 
     private boolean checkNextMoveInBounds(Square s, int[] direction){
@@ -160,13 +156,16 @@ public class Maze {
 
     public List<Square> getVisitOrder(){
         if(this.visitOrder == null)
-            throw new NullPointerException("visitOrder is NULL");
+            throw new NullPointerException("visitOrder is NULL at this point");
         else{
-            //Returned list won't contain start and end nodes
-            this.visitOrder.remove(this.visitOrder.size() - 1);
-            this.visitOrder.remove(0);
-
             return this.visitOrder;
         }
+    }
+
+    public List<Square> getShortestPath(){
+        if(this.shortestPath == null)
+            throw new NullPointerException("shortestPath is NULL at this point");
+        else
+            return this.shortestPath;
     }
 }
