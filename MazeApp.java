@@ -2,54 +2,43 @@ package maze;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MazeApp {
     public MazeApp(){
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JFrame f = new JFrame("Maze App");
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.setSize(500, 100);
+        EventQueue.invokeLater(() -> {
+            JFrame f = new JFrame("Maze App");
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.setSize(500, 100);
 
-                JLabel fileNameLabel = new JLabel("Enter the file name");
-                JTextField fileInput = new JTextField(30);
-                JButton loadButton = new JButton("Load");
-                loadButton.setVisible(false);
+            JLabel fileNameLabel = new JLabel("Enter the file name");
+            JTextField fileInput = new JTextField(30);
+            JButton loadButton = new JButton("Load");
+            loadButton.setVisible(false);
 
-                JPanel panel = new JPanel();
-                panel.add(fileNameLabel);
-                panel.add(fileInput);
-                panel.add(loadButton);
+            JPanel panel = new JPanel();
+            panel.add(fileNameLabel);
+            panel.add(fileInput);
+            panel.add(loadButton);
 
-                f.add(panel);
-                f.setVisible(true);
+            f.add(panel);
+            f.setVisible(true);
 
-                fileInput.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        if(MazeReader.isFileValid(fileInput.getText())){
-                            loadButton.setVisible(true);
-                        }
-                    }
-                });
+            fileInput.addActionListener(actionEvent -> {
+                if(MazeReader.isFileValid(fileInput.getText())){
+                    loadButton.setVisible(true);
+                }
+            });
 
-                loadButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        Maze maze = MazeReader.readMaze(fileInput.getText());
-                        MazeSolver solver = new MazeSolver();
-                        displayMaze(maze, solver);
+            loadButton.addActionListener(actionEvent -> {
+                Maze maze = MazeReader.readMaze(fileInput.getText());
+                MazeSolver solver = new MazeSolver();
+                displayMaze(maze, solver);
 
-                        f.dispose();
-                    }
-                });
-            }
+                f.dispose();
+            });
         });
     }
 
@@ -99,91 +88,76 @@ public class MazeApp {
             mazeLabels.add(mazeLabelRow);
         }
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                //Make startButton idempotent
-                startButton.setVisible(false);
+        startButton.addActionListener(actionEvent -> {
+            //Make startButton idempotent
+            startButton.setVisible(false);
 
-                //Because startButton was clicked, hide stepButton
-                stepButton.setVisible(false);
+            //Because startButton was clicked, hide stepButton
+            stepButton.setVisible(false);
 
-                Timer t1 = new Timer(100, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        if(!visited.isEmpty()){
-                            mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
-                            visited.remove(0);
-
-                            statusLabel.setText("Solution in Progress");
-                        }
-                        else{
-                            for(Square s : shortestPath){
-                                mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
-                            }
-
-                            startButton.setVisible(false);
-                            stepButton.setVisible(false);
-                            resetButton.setVisible(true);
-
-                            if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                                statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
-                            else{
-                                //statusLabel.setText("No Solution Found");
-                            }
-                        }
-                    }
-                });
-                t1.start();
-            }
-        });
-
-        stepButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            Timer t1 = new Timer(100, actionEvent12 -> {
                 if(!visited.isEmpty()){
                     mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
                     visited.remove(0);
+
+                    statusLabel.setText("Solution in Progress");
                 }
                 else{
-                    Timer t2 = new Timer(100, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent actionEvent) {
-                            if(!shortestPath.isEmpty()){
-                                for(Square s : shortestPath){
-                                    mazeLabels.get(s.getCoordinate().getY()).get(s.getCoordinate().getX()).setBackground(Color.PINK);
-                                }
-
-                                statusLabel.setText("Solution in Progress");
-                            }
-                            else{
-                                startButton.setVisible(false);
-                                stepButton.setVisible(false);
-                                resetButton.setVisible(true);
-
-                                if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                                    statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
-                                else{
-                                    //statusLabel.setText("No Solution Found");
-                                }
-                            }
-                        }
-                    });
-                    t2.start();
+                    for(Square s12 : shortestPath){
+                        mazeLabels.get(s12.getCoordinate().getY()).get(s12.getCoordinate().getX()).setBackground(Color.PINK);
+                    }
 
                     startButton.setVisible(false);
                     stepButton.setVisible(false);
                     resetButton.setVisible(true);
+
+                    if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
+                        statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
+                    else{
+                        //statusLabel.setText("No Solution Found");
+                    }
                 }
+            });
+            t1.start();
+        });
+
+        stepButton.addActionListener(actionEvent -> {
+            if(!visited.isEmpty()){
+                mazeLabels.get(visited.get(0).getCoordinate().getY()).get(visited.get(0).getCoordinate().getX()).setBackground(Color.GRAY);
+                visited.remove(0);
+            }
+            else{
+                Timer t2 = new Timer(100, actionEvent1 -> {
+                    if(!shortestPath.isEmpty()){
+                        for(Square s1 : shortestPath){
+                            mazeLabels.get(s1.getCoordinate().getY()).get(s1.getCoordinate().getX()).setBackground(Color.PINK);
+                        }
+
+                        statusLabel.setText("Solution in Progress");
+                    }
+                    else{
+                        startButton.setVisible(false);
+                        stepButton.setVisible(false);
+                        resetButton.setVisible(true);
+
+                        if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
+                            statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
+                        else{
+                            //statusLabel.setText("No Solution Found");
+                        }
+                    }
+                });
+                t2.start();
+
+                startButton.setVisible(false);
+                stepButton.setVisible(false);
+                resetButton.setVisible(true);
             }
         });
 
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                f.dispose();
-                new MazeApp();
-            }
+        resetButton.addActionListener(actionEvent -> {
+            f.dispose();
+            new MazeApp();
         });
 
         f.add(scrollPane, BorderLayout.NORTH);
