@@ -57,7 +57,7 @@ public class MazeSolver {
                         continue;
 
                     //Dont add new square to list to visit if it is visited
-                    if(!visited.contains(maze.getSquareByCoordinate(newSquare.getCoordinate().getX(), newSquare.getCoordinate().getY()))){
+                    if(!visited.contains(newSquare)){
                         newSquare.setParent(current);
                         nextToVisit.add(newSquare);
                         visited.add(current);
