@@ -99,9 +99,9 @@ public class MazeSolver {
 
     private boolean checkNextMoveInBounds(Square s, int[] direction, int rows, int columns){
         if(s.getCoordinate().getX() + direction[0] < 0
-                || s.getCoordinate().getX() + direction[0] > columns
+                || s.getCoordinate().getX() + direction[0] >= columns
                 || s.getCoordinate().getY() + direction[1] < 0
-                || s.getCoordinate().getY() + direction[1] > rows)
+                || s.getCoordinate().getY() + direction[1] >= rows)
             return false;
         else
             return true;

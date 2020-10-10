@@ -55,7 +55,11 @@ public class MazeApp {
 
     public void displayMaze(Maze m, MazeSolver s){
         List<List<JLabel>> mazeLabels = new ArrayList<>();
+
+        long startTime = System.nanoTime();
         List<Square> shortestPath = s.solve(m);
+        long endTime = System.nanoTime();
+
         Collections.reverse(shortestPath);
         List<Square> visited = s.getVisitOrder();
 
@@ -117,7 +121,7 @@ public class MazeApp {
                             resetButton.setVisible(true);
 
                             if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                                statusLabel.setText("Solution Finished");
+                                statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
                             else{
                                 statusLabel.setText("No Solution Found");
                             }
@@ -152,7 +156,7 @@ public class MazeApp {
                                 resetButton.setVisible(true);
 
                                 if(mazeLabels.get(m.endCoordinate.getY()).get(m.endCoordinate.getX()).getBackground() == Color.PINK)
-                                    statusLabel.setText("Solution Finished");
+                                    statusLabel.setText("Solution Found in " + (endTime - startTime)/1000000 + "ms");
                                 else{
                                     statusLabel.setText("No Solution Found");
                                 }
