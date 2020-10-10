@@ -84,6 +84,10 @@ public class MazeSolver {
             current = current.getParent();
         }
 
+        //Returned list will not contain start and end nodes
+        backtrackPath.remove(backtrackPath.size() - 1);
+        backtrackPath.remove(0);
+
         return backtrackPath;
     }
 
@@ -108,6 +112,14 @@ public class MazeSolver {
     }
 
     public List<Square> getVisitOrder(){
-        return this.visitOrder;
+        if(this.visitOrder == null)
+            throw new NullPointerException("visitOrder is NULL");
+        else{
+            //Returned list won't contain start and end nodes
+            this.visitOrder.remove(this.visitOrder.size() - 1);
+            this.visitOrder.remove(0);
+
+            return this.visitOrder;
+        }
     }
 }
