@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * IT 340 Project 01
@@ -103,7 +102,7 @@ public class MazeReader {
 
 	public static boolean isFileValid(String fileName){
 		try{
-			BufferedReader input = new BufferedReader(new FileReader(fileName));
+			new BufferedReader(new FileReader(fileName));
 			return true;
 		}
 		catch(Exception e){
